@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  username  String   @unique
+  password  String
+  languages String[]
+}
+
+model Artist {
+  name      String
+  id        Int         @id @default(autoincrement())
+  link      String?
+  Card      Card[]
+  CardStack CardStack[]
+}
+
+model Group {
+  id                 Int    @id @default(autoincrement())
+  law                String
+  infrastructure     String
+  research           String
+  private_initiative String
+  event              String
+  Card               Card[]
+}
+
+model Event_Sub_Group {
+  id                 Int    @id @default(autoincrement())
+  co2                Int
+  nature             Int
+  gdp                Int
+  private_initiative Int
+  Card               Card[]
+}
+
+model Type {
+  id     Int    @id @default(autoincrement())
+  event  String
+  action String
+  Card   Card[]
+}
+
+model Language {
+  id        Int         @id @default(autoincrement())
+  language  String
+  Card      Card[]
+  CardStack CardStack[]
+}
+
+model Image {
+  id     Int    @id @default(autoincrement())
+  qrcode String
+}
+
+model Card {
+  id                   Int             @id @default(autoincrement()) // Primary key with auto-increment
+  languageId           Int
+  language             Language        @relation(fields: [languageId], references: [id]) // Relation to Language model
+  name                 String // `name` should be a string field, not a relation to Artist
+  artistId             Int
+  artist               Artist          @relation(fields: [artistId], references: [id]) // Relation to Artist model
+  typeId               Int
+  type                 Type            @relation(fields: [typeId], references: [id]) // Relation to Type model
+  groupId              Int
+  group                Group           @relation(fields: [groupId], references: [id]) // Relation to Group model
+  event_sub_groupId    Int
+  event_sub_group      Event_Sub_Group @relation(fields: [event_sub_groupId], references: [id]) // Relation to Event_Sub_Group model
+  qrcode               String // QR code field (string type)
+  scene                String // Scene description (string type)
+  action               String // Action description (string type)
+  consequence_positive String // Positive consequence description (string type)
+  consequence_negative String // Negative consequence description (string type)
+  co2_level_number     Int // CO2 level number (integer type)
+  co2_level            String // CO2 level description (string type)
+  nature_level_number  Int // Nature level number (integer type)
+  nature_level         String // Nature level description (string type)
+  gdp_level_number     Int // GDP level number (integer type)
+  gdp_level            String // GDP level description (string type)
+  image                String // Image field (string type)
+}
+
+model CardStack {
+  id         Int      @id @default(autoincrement()) // Primary key with auto-increment
+  name       String // `name` should be a string field, not a relation to Artist
+  languageId Int
+  language   Language @relation(fields: [languageId], references: [id]) // Relation to Language model
+  artistId   Int
+  artist     Artist   @relation(fields: [artistId], references: [id]) // Relation to Artist model
+}
