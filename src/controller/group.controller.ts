@@ -2,16 +2,12 @@ import prisma from "../prisma";
 
 // Create a new Group
 export const createGroup = async (req, res): Promise<void> => {
-  const { law, infrastructure, research, private_initiative, event } = req.body;
+  const { groupName } = req.body;
 
   try {
     const group = await prisma.group.create({
       data: {
-        law,
-        infrastructure,
-        research,
-        private_initiative,
-        event,
+        groupName,
       },
     });
     res.status(201).json(group);
@@ -54,17 +50,13 @@ export const getGroupById = async (req, res): Promise<void> => {
 // Update a Group
 export const updateGroup = async (req, res): Promise<void> => {
   const { id } = req.params;
-  const { law, infrastructure, research, private_initiative, event } = req.body;
+  const { groupName } = req.body;
 
   try {
     const group = await prisma.group.update({
       where: { id: parseInt(id, 10) },
       data: {
-        law,
-        infrastructure,
-        research,
-        private_initiative,
-        event,
+        groupName,
       },
     });
     res.status(200).json(group);

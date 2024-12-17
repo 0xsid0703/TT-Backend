@@ -2,14 +2,11 @@ import prisma from "../prisma"; // Ensure this points to your Prisma instance
 
 // Create a new Event_Sub_Group
 export const createEventSubGroup = async (req, res): Promise<void> => {
-  const { co2, nature, gdp, private_initiative } = req.body;
+  const { subGroupName } = req.body;
   try {
     const eventSubGroup = await prisma.event_Sub_Group.create({
       data: {
-        co2: parseInt(co2),
-        nature: parseInt(nature),
-        gdp: parseInt(gdp),
-        private_initiative: parseInt(private_initiative),
+        subGroupName: subGroupName,
       },
     });
     res.status(200).json(eventSubGroup);
@@ -52,16 +49,13 @@ export const getEventSubGroupById = async (req, res): Promise<void> => {
 // Update an Event_Sub_Group
 export const updateEventSubGroup = async (req, res): Promise<void> => {
   const { id } = req.params;
-  const { co2, nature, gdp, private_initiative } = req.body;
+  const { subGroupName } = req.body;
 
   try {
     const eventSubGroup = await prisma.event_Sub_Group.update({
       where: { id: parseInt(id, 10) },
       data: {
-        co2: parseInt(co2),
-        nature: parseInt(nature),
-        gdp: parseInt(gdp),
-        private_initiative: parseInt(private_initiative),
+        subGroupName: subGroupName,
       },
     });
     res.status(200).json(eventSubGroup);

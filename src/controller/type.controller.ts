@@ -2,13 +2,12 @@ import prisma from "../prisma"; // Ensure this points to your Prisma instance
 
 // Create a new Type
 export const createType = async (req, res): Promise<void> => {
-  const { event, action } = req.body;
+  const { typeName } = req.body;
 
   try {
     const type = await prisma.type.create({
       data: {
-        event,
-        action,
+        typeName,
       },
     });
     res.status(201).json(type);
@@ -51,14 +50,13 @@ export const getTypeById = async (req, res): Promise<void> => {
 // Update a Type
 export const updateType = async (req, res): Promise<void> => {
   const { id } = req.params;
-  const { event, action } = req.body;
+  const { typeName } = req.body;
 
   try {
     const type = await prisma.type.update({
       where: { id: parseInt(id, 10) },
       data: {
-        event,
-        action,
+        typeName,
       },
     });
     res.status(200).json(type);

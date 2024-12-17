@@ -30,29 +30,21 @@ model Artist {
 }
 
 model Group {
-  id                 Int    @id @default(autoincrement())
-  law                String
-  infrastructure     String
-  research           String
-  private_initiative String
-  event              String
-  Card               Card[]
+  id        Int    @id @default(autoincrement())
+  groupName String
+  Card      Card[]
 }
 
 model Event_Sub_Group {
-  id                 Int    @id @default(autoincrement())
-  co2                Int
-  nature             Int
-  gdp                Int
-  private_initiative Int
-  Card               Card[]
+  id           Int    @id @default(autoincrement())
+  subGroupName String
+  Card         Card[]
 }
 
 model Type {
-  id     Int    @id @default(autoincrement())
-  event  String
-  action String
-  Card   Card[]
+  id       Int    @id @default(autoincrement())
+  typeName String
+  Card     Card[]
 }
 
 model Language {
@@ -63,8 +55,8 @@ model Language {
 }
 
 model Image {
-  id     Int    @id @default(autoincrement())
-  qrcode String
+  id   Int    @id @default(autoincrement())
+  name String
 }
 
 model Card {

@@ -12,12 +12,15 @@ import languageRoutes from "./routes/language.route";
 import typeRoutes from "./routes/type.route";
 import userRoutes from "./routes/user.route";
 import { getAllStats } from "./controller/all.controller";
+import path from "path";
 
 dotenv.config();
 
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use("/images", express.static(path.join(__dirname, "../images")));
+
 const port = process.env.PORT || 5000;
 app.use(
   cors({

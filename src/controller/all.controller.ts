@@ -21,6 +21,8 @@ export const getAllStats = async (req, res): Promise<void> => {
     const languages = await prisma.language.findMany({});
     const types = await prisma.type.findMany({});
     const users = await prisma.user.findMany();
+    const groups = await prisma.group.findMany();
+    const subGroups = await prisma.event_Sub_Group.findMany();
     const cardStacks = await prisma.cardStack.findMany({
       include: {
         language: true,
@@ -29,7 +31,17 @@ export const getAllStats = async (req, res): Promise<void> => {
     });
     res
       .status(200)
-      .json({ artists, cards, images, languages, types, users, cardStacks });
+      .json({
+        artists,
+        cards,
+        images,
+        languages,
+        types,
+        users,
+        cardStacks,
+        groups,
+        subGroups,
+      });
   } catch (error) {
     console.error("Error fetching artists:", error);
     res.status(500).json({ error: "Error fetching artists" });

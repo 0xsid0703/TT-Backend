@@ -1,20 +1,52 @@
 import prisma from "../prisma"; // Make sure to import your Prisma instance
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    // const imagesFolder = path.join(__dirname, "images");
+    const imagesFolder = "images";
+    // Create the images folder if it doesn't exist
+    if (!fs.existsSync(imagesFolder)) {
+      fs.mkdirSync(imagesFolder);
+    }
+
+    cb(null, imagesFolder);
+  },
+  filename: (req, file, cb) => {
+    // You can customize the file name if needed
+    cb(null, Date.now() + path.extname(file.originalname)); // Save with timestamp
+  },
+});
+const upload = multer({ storage });
 
 // Create a new Image
 export const createImage = async (req, res): Promise<void> => {
-  const { qrcode } = req.body;
+  const uploadMiddleware = upload.single("file");
 
-  try {
-    const newImage = await prisma.image.create({
-      data: {
-        qrcode,
-      },
-    });
-    res.status(201).json(newImage);
-  } catch (error) {
-    console.error("Error creating Image:", error);
-    res.status(500).json({ error: "Error creating Image" });
-  }
+  uploadMiddleware(req, res, async (err) => {
+    if (err instanceof multer.MulterError) {
+      return res
+        .status(400)
+        .json({ success: false, message: "File upload error" });
+    }
+
+    try {
+      const storedFileName = req.file?.filename;
+      // Store the file information in the database
+      const image = await prisma.image.create({
+        data: {
+          name: storedFileName,
+        },
+      });
+
+      res.status(200).json({ success: true, image: image });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: "Error uploading file" });
+    }
+  });
 };
 
 // Get all Images
@@ -50,13 +82,13 @@ export const getImageById = async (req, res): Promise<void> => {
 // Update an Image
 export const updateImage = async (req, res): Promise<void> => {
   const { id } = req.params;
-  const { qrcode } = req.body;
+  const { name } = req.body;
 
   try {
     const updatedImage = await prisma.image.update({
       where: { id: parseInt(id, 10) },
       data: {
-        qrcode,
+        name,
       },
     });
     res.status(200).json(updatedImage);
