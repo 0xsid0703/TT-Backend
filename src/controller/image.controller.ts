@@ -82,20 +82,30 @@ export const getImageById = async (req, res): Promise<void> => {
 // Update an Image
 export const updateImage = async (req, res): Promise<void> => {
   const { id } = req.params;
-  const { name } = req.body;
+  const uploadMiddleware = upload.single("file");
+  console.log({ id });
+  uploadMiddleware(req, res, async (err) => {
+    if (err instanceof multer.MulterError) {
+      return res
+        .status(400)
+        .json({ success: false, message: "File upload error" });
+    }
 
-  try {
-    const updatedImage = await prisma.image.update({
-      where: { id: parseInt(id, 10) },
-      data: {
-        name,
-      },
-    });
-    res.status(200).json(updatedImage);
-  } catch (error) {
-    console.error("Error updating Image:", error);
-    res.status(500).json({ error: "Error updating Image" });
-  }
+    try {
+      const storedFileName = req.file?.filename;
+
+      const updatedImage = await prisma.image.update({
+        where: { id: parseInt(id, 10) },
+        data: {
+          name: storedFileName,
+        },
+      });
+      res.status(200).json({ success: true, image: updatedImage });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: "Error uploading file" });
+    }
+  });
 };
 
 // Delete an Image
@@ -106,7 +116,7 @@ export const deleteImage = async (req, res): Promise<void> => {
     await prisma.image.delete({
       where: { id: parseInt(id, 10) },
     });
-    res.status(204).send(); // No content
+    res.json({ id: Number(id) });
   } catch (error) {
     console.error("Error deleting Image:", error);
     res.status(500).json({ error: "Error deleting Image" });
