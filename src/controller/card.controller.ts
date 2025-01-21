@@ -3,12 +3,12 @@ import prisma from "../prisma";
 // Create a new Card
 export const createCard = async (req, res) => {
   const {
+    number,
     languageId,
     name,
     artistId,
     typeId,
     groupId,
-    event_sub_groupId,
     qrcode,
     scene,
     action,
@@ -23,15 +23,12 @@ export const createCard = async (req, res) => {
   try {
     const card = await prisma.card.create({
       data: {
+        number,
         name,
         languageId: parseInt(languageId),
         artistId: parseInt(artistId),
         typeId: parseInt(typeId),
         groupId: parseInt(groupId),
-        event_sub_groupId:
-          parseInt(event_sub_groupId) && parseInt(event_sub_groupId) !== 0
-            ? parseInt(event_sub_groupId)
-            : null,
         qrcode,
         scene,
         action,
@@ -47,7 +44,6 @@ export const createCard = async (req, res) => {
         artist: true,
         type: true,
         group: true,
-        event_sub_group: true,
       },
     });
     res.status(200).json(card);
@@ -66,7 +62,6 @@ export const getCards = async (req, res) => {
         artist: true,
         type: true,
         group: true,
-        event_sub_group: true,
       },
     });
     res.status(200).json(cards);
@@ -88,7 +83,6 @@ export const getCardById = async (req, res) => {
         artist: true,
         type: true,
         group: true,
-        event_sub_group: true,
       },
     });
     if (!card) {
@@ -105,12 +99,12 @@ export const getCardById = async (req, res) => {
 export const updateCard = async (req, res) => {
   const { id } = req.params;
   const {
+    number,
     languageId,
     name,
     artistId,
     typeId,
     groupId,
-    event_sub_groupId,
     qrcode,
     scene,
     action,
@@ -121,20 +115,16 @@ export const updateCard = async (req, res) => {
     gdp_level_number,
     image,
   } = req.body;
-
   try {
     const card = await prisma.card.update({
       where: { id: parseInt(id, 10) },
       data: {
+        number,
         languageId: parseInt(languageId),
         name,
         artistId: parseInt(artistId),
         typeId: parseInt(typeId),
         groupId: parseInt(groupId),
-        event_sub_groupId:
-          parseInt(event_sub_groupId) && parseInt(event_sub_groupId) !== 0
-            ? parseInt(event_sub_groupId)
-            : null,
         qrcode,
         scene,
         action,
@@ -150,7 +140,6 @@ export const updateCard = async (req, res) => {
         artist: true,
         type: true,
         group: true,
-        event_sub_group: true,
       },
     });
     res.status(200).json(card);
@@ -172,5 +161,30 @@ export const deleteCard = async (req, res) => {
   } catch (error) {
     console.error("Error deleting card:", error);
     res.status(500).json({ error: "Error deleting card" });
+  }
+};
+
+
+// Get a Card by qrcode
+export const getCardByQRCode = async (req, res) => {
+  const { qrcode } = req.body;
+
+  try {
+    const card = await prisma.card.findFirst({
+      where: { qrcode: qrcode },
+      include: {
+        language: true,
+        artist: true,
+        type: true,
+        group: true,
+      },
+    });
+    if (!card) {
+      return res.status(404).json({ error: "Card not found" });
+    }
+    res.status(200).json(card);
+  } catch (error) {
+    console.error("Error fetching card:", error);
+    res.status(500).json({ error: "Error fetching card" });
   }
 };

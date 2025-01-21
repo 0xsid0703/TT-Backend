@@ -22,23 +22,18 @@ model User {
 }
 
 model Artist {
-  name      String
-  id        Int         @id @default(autoincrement())
-  link      String?
-  Card      Card[]
-  CardStack CardStack[]
+  name       String
+  id         Int          @id @default(autoincrement())
+  link       String?
+  Card       Card[]
+  CardStack  CardStack[]
+  ImageStack ImageStack[]
 }
 
 model Group {
   id        Int    @id @default(autoincrement())
   groupName String
   Card      Card[]
-}
-
-model Event_Sub_Group {
-  id           Int    @id @default(autoincrement())
-  subGroupName String
-  Card         Card[]
 }
 
 model Type {
@@ -54,24 +49,32 @@ model Language {
   CardStack CardStack[]
 }
 
+model ImageStack {
+  id       Int     @id @default(autoincrement())
+  artistId Int
+  artist   Artist  @relation(fields: [artistId], references: [id])
+  Image    Image[]
+}
+
 model Image {
-  id   Int    @id @default(autoincrement())
-  name String
+  id      Int        @id @default(autoincrement())
+  name    String
+  stackId Int
+  stack   ImageStack @relation(fields: [stackId], references: [id])
 }
 
 model Card {
-  id                   Int              @id @default(autoincrement()) // Primary key with auto-increment
+  id                   Int      @id @default(autoincrement()) // Primary key with auto-increment
+  number               Int
   languageId           Int
-  language             Language         @relation(fields: [languageId], references: [id]) // Relation to Language model
+  language             Language @relation(fields: [languageId], references: [id]) // Relation to Language model
   name                 String // `name` should be a string field, not a relation to Artist
   artistId             Int
-  artist               Artist           @relation(fields: [artistId], references: [id]) // Relation to Artist model
+  artist               Artist   @relation(fields: [artistId], references: [id]) // Relation to Artist model
   typeId               Int
-  type                 Type             @relation(fields: [typeId], references: [id]) // Relation to Type model
+  type                 Type     @relation(fields: [typeId], references: [id]) // Relation to Type model
   groupId              Int
-  group                Group            @relation(fields: [groupId], references: [id]) // Relation to Group model
-  event_sub_groupId    Int?
-  event_sub_group      Event_Sub_Group? @relation(fields: [event_sub_groupId], references: [id]) // Relation to Event_Sub_Group model
+  group                Group    @relation(fields: [groupId], references: [id]) // Relation to Group model
   qrcode               String // QR code field (string type)
   scene                String // Scene description (string type)
   action               String // Action description (string type)

@@ -16,20 +16,20 @@ export const getAllStats = async (req, res): Promise<void> => {
         artist: true,
         type: true,
         group: true,
-        event_sub_group: true,
       },
     });
 
     const images = await prisma.image.findMany({ orderBy: { id: "asc" } });
+    const imagestacks = await prisma.imageStack.findMany({ orderBy: { id: "asc" },
+      include: {
+        artist: true,
+      }, });
     const languages = await prisma.language.findMany({
       orderBy: { id: "asc" },
     });
     const types = await prisma.type.findMany({ orderBy: { id: "asc" } });
     const users = await prisma.user.findMany({ orderBy: { id: "asc" } });
     const groups = await prisma.group.findMany({ orderBy: { id: "asc" } });
-    const subGroups = await prisma.event_Sub_Group.findMany({
-      orderBy: { id: "asc" },
-    });
     const cardStacks = await prisma.cardStack.findMany({
       orderBy: { id: "asc" },
       include: {
@@ -46,7 +46,7 @@ export const getAllStats = async (req, res): Promise<void> => {
       users,
       cardStacks,
       groups,
-      subGroups,
+      imagestacks,
     });
   } catch (error) {
     console.error("Error fetching artists:", error);

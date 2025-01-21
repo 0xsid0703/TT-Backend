@@ -19,34 +19,21 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + path.extname(file.originalname)); // Save with timestamp
   },
 });
-const upload = multer({ storage });
+export const upload = multer({ storage });
 
 // Create a new Image
 export const createImage = async (req, res): Promise<void> => {
-  const uploadMiddleware = upload.single("file");
-
-  uploadMiddleware(req, res, async (err) => {
-    if (err instanceof multer.MulterError) {
-      return res
-        .status(400)
-        .json({ success: false, message: "File upload error" });
-    }
-
-    try {
-      const storedFileName = req.file?.filename;
-      // Store the file information in the database
-      const image = await prisma.image.create({
-        data: {
-          name: storedFileName,
-        },
-      });
-
-      res.status(200).json({ success: true, image: image });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, message: "Error uploading file" });
-    }
+  const stackId = req.body.stackId;
+  const storedFileName = req.file?.filename;
+  // Store the file information in the database
+  const image = await prisma.image.create({
+    data: {
+      name: storedFileName,
+      stackId: parseInt(stackId, 10),
+    },
   });
+
+  res.status(200).json({ success: true, image });
 };
 
 // Get all Images
@@ -82,6 +69,7 @@ export const getImageById = async (req, res): Promise<void> => {
 // Update an Image
 export const updateImage = async (req, res): Promise<void> => {
   const { id } = req.params;
+  const { stackId } = req.body;
   const uploadMiddleware = upload.single("file");
   console.log({ id });
   uploadMiddleware(req, res, async (err) => {
@@ -98,6 +86,7 @@ export const updateImage = async (req, res): Promise<void> => {
         where: { id: parseInt(id, 10) },
         data: {
           name: storedFileName,
+          stackId: stackId,
         },
       });
       res.status(200).json({ success: true, image: updatedImage });
